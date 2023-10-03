@@ -36,6 +36,8 @@ export default function Example() {
         <body class="h-full">
         ```
       */}
+
+   
       <div className="min-h-full">
         <div className="bg-gray-800 pb-32">
           <Disclosure as="nav" className="bg-gray-800">
