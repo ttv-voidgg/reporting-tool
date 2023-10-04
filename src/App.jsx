@@ -209,7 +209,6 @@ export default function Example() {
 
            {/*START ADDING DATA HERE*/}
             <div className="App">
-              <h1>Company Data</h1>
               <CompanyTable />
             </div>                        
            {/*END ADDING DATA HERE*/}

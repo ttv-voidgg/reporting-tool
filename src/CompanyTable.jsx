@@ -1,50 +1,49 @@
 import React, { useEffect, useState } from "react";
-import { getDatabase, ref, get } from "firebase/database";
 import companiesRef from "./firebase";
+import { onValue } from "firebase/database";
 
 const CompanyTable = () => {
   const [companies, setCompanies] = useState([]);
 
   useEffect(() => {
-    // Fetch data from Firebase
-    const fetchData = async () => {
-      try {
-        const database = getDatabase();
-        const companyRef = ref(database, "Companies");
-
-        const snapshot = await get(companyRef);
-        if (snapshot.exists()) {
-          setCompanies(Object.entries(snapshot.val()));
-        } else {
-          console.log("No data available");
-        }
-      } catch (error) {
-        console.error("Error fetching data: ", error);
+    const unsubscribe = onValue(companiesRef, (snapshot) => {
+      if (snapshot.exists()) {
+        const jsonData = snapshot.val();
+        setCompanies(Object.entries(jsonData));
+      } else {
+        console.log("No data available");
+        setCompanies([]);
       }
-    };
+    });
 
-    fetchData();
-  }, []);
+    return () => {
+      // Unsubscribe the listener when the component unmounts
+      unsubscribe();
+    };
+  }, []); // Empty dependency array ensures the effect runs once after the initial render
 
   return (
-    <table>
-      <thead>
-        <tr>
-          <th>Name</th>
-          <th>Client Contacts</th>
-          <th>Client Email</th>
-        </tr>
-      </thead>
-      <tbody>
-        {companies.map(([key, company]) => (
-          <tr key={key}>
-            <td>{company.Name}</td>
-            <td>{company["Client Contacts"]}</td>
-            <td>{company["Client Email"]}</td>
+    <div>
+      <h2>Company Data</h2>
+      <table>
+        <thead>
+          <tr>
+            <th>Name</th>
+            <th>Client Contacts</th>
+            <th>Client Email</th>
           </tr>
-        ))}
-      </tbody>
-    </table>
+        </thead>
+        <tbody>
+          {companies.map(([key, company]) => (
+            <tr key={key}>
+              <td>{company.Name}</td>
+              <td>{company["Client Contacts"]}</td>
+              <td>{company["Client Email"]}</td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
   );
 };
 
