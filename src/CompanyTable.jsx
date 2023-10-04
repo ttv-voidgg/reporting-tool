@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import companiesRef from "./firebase";
 import { onValue } from "firebase/database";
+import './clientTable.css'
 
 const CompanyTable = () => {
   const [companies, setCompanies] = useState([]);
@@ -25,7 +26,7 @@ const CompanyTable = () => {
   return (
     <div>
       <h2>Company Data</h2>
-      <table>
+      <table className="client-table table-auto w-full">
         <thead>
           <tr>
             <th>Name</th>
