@@ -4,6 +4,8 @@ import { Bars3Icon, BellIcon, XMarkIcon, PhotoIcon, UserCircleIcon } from '@hero
 
 //IMPOR COMPANY TABLE
 import CompanyTable from "./CompanyTable";
+import AddCompany from "./AddCompany";
+import TextBoxSample from "./TextBoxSample";
 
 const user = {
   name: 'Tom Cook',
@@ -209,7 +211,15 @@ export default function Example() {
 
            {/*START ADDING DATA HERE*/}
             <div className="App">
-              <CompanyTable />
+            <div className="mb-5">
+                <AddCompany/>
+              </div>              
+              <div className="mb-5">
+                <CompanyTable />
+              </div>
+              <div className="mb-5">
+                <TextBoxSample />
+              </div>
             </div>                        
            {/*END ADDING DATA HERE*/}
 

@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
-import companiesRef from "./firebase";
 import { onValue } from "firebase/database";
-import './clientTable.css'
+import { companiesRef } from "./firebase"; // Import companiesRef from firebase.jsx
+import './clientTable.css';
 
 const CompanyTable = () => {
   const [companies, setCompanies] = useState([]);
@@ -21,7 +21,7 @@ const CompanyTable = () => {
       // Unsubscribe the listener when the component unmounts
       unsubscribe();
     };
-  }, []); // Empty dependency array ensures the effect runs once after the initial render
+  }, []);
 
   return (
     <div>
@@ -37,9 +37,9 @@ const CompanyTable = () => {
         <tbody>
           {companies.map(([key, company]) => (
             <tr key={key}>
-              <td>{company.Name}</td>
-              <td>{company["Client Contacts"]}</td>
-              <td>{company["Client Email"]}</td>
+              <td>{company["Company_Name"]}</td>
+              <td>{company["Contacts"]}</td>
+              <td>{company["Email"]}</td>
             </tr>
           ))}
         </tbody>
