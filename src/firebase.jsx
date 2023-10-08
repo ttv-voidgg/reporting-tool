@@ -1,6 +1,7 @@
 // Import the functions you need from the SDKs you need
 import { initializeApp } from 'firebase/app';
 import { getDatabase, ref } from 'firebase/database';
+const currentDate = new Date().toLocaleDateString('en-CA').replace(/\//g, '-'); // Format date as YYYY-MM-DD
 // TODO: Add SDKs for Firebase products that you want to use
 // https://firebase.google.com/docs/web/setup#available-libraries
 
@@ -21,5 +22,6 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const database = getDatabase(app);
 const companiesRef = ref(database, 'Companies');
+const reportsRef = ref(database, 'Reports'); 
 
-export { companiesRef };
+export { companiesRef, reportsRef };
