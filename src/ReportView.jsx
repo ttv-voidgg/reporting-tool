@@ -8,7 +8,7 @@ const STATUS_ORDER = ['Done', 'In Progress', 'To Do'];
 const STATUS_EQUIVALENTS = {
   Done: 'This week, we worked on the following:',
   'In Progress': 'We are currently working on the following:',
-  'To Do': 'Next week, we will be working on the following:'
+  'To Do': 'We will be working on the following:'
 };
 
 function getWeekDateRange(date) {
