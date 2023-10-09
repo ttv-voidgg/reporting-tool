@@ -6,6 +6,9 @@ import { Bars3Icon, BellIcon, XMarkIcon, PhotoIcon, UserCircleIcon } from '@hero
 import CompanyTable from "./CompanyTable";
 import AddCompany from "./AddCompany";
 import TextBoxSample from "./TextBoxSample";
+import ReportsList from "./ReportsList";
+import ReportSubmission from "./ReportSubmission";
+import ReportView from "./ReportView";
 
 const user = {
   name: 'Tom Cook',
@@ -211,15 +214,21 @@ export default function Example() {
 
            {/*START ADDING DATA HERE*/}
             <div className="App">
-            <div className="mb-5">
+              <div className="mb-5">
                 <AddCompany/>
               </div>              
               <div className="mb-5">
                 <CompanyTable />
               </div>
               <div className="mb-5">
-                <TextBoxSample />
+                {/* <TextBoxSample /> */}
               </div>
+              <div className="mb-5">
+                <ReportSubmission />
+              </div>
+              <div className="mb-5">
+                <ReportView />
+              </div>              
             </div>                        
            {/*END ADDING DATA HERE*/}
 
