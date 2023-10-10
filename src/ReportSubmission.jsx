@@ -141,6 +141,10 @@ export default function ReportSubmission() {
           <input type="radio" name="status" value="To Do" onChange={() => setSelectedStatus('To Do')} />
           To Do
         </label>
+        <label>
+          <input type="radio" name="status" value="Client Notes" onChange={() => setSelectedStatus('Client Notes')} />
+          Additional Client Notes
+        </label>        
       </div>
 
       <Editor

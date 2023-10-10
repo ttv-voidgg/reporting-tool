@@ -3,12 +3,13 @@ import { onValue } from 'firebase/database';
 import { reportsRef, companiesRef } from './firebase'; // Import your Firebase setup
 import './ReportView.css'; // Import CSS file for styling
 
-const STATUS_ORDER = ['Done', 'In Progress', 'To Do'];
+const STATUS_ORDER = ['Done', 'In Progress', 'To Do', 'Client Notes'];
 
 const STATUS_EQUIVALENTS = {
   Done: 'This week, we worked on the following:',
   'In Progress': 'We are currently working on the following:',
-  'To Do': 'We will be working on the following:'
+  'To Do': 'We will be working on the following:',
+  'Client Notes': 'Additional Notes:',
 };
 
 function getWeekDateRange(date) {
