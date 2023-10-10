@@ -8,9 +8,14 @@
     @apply list-disc mb-4;
     margin-left: 25px;
 }
+
 .ReportList p {
     @apply list-disc;
     margin-left: 25px;
+}
+
+.ReportList h5 {
+    font-size:small;
 }
 
 .ReportList ul ul {
