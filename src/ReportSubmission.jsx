@@ -29,6 +29,27 @@ export default function ReportSubmission() {
     };
     }, []);
 
+    function getWeekDateRange(date) {
+      const today = new Date(date);
+      const startOfWeek = new Date(date);
+      const endOfWeek = new Date(date);
+    
+      const currentDay = today.getDay();
+      const diffToMonday = today.getDate() - currentDay + (currentDay === 1 ? 0 : (currentDay === 1 ? -6 : 1));
+    
+      startOfWeek.setDate(diffToMonday);
+      endOfWeek.setDate(diffToMonday + 4); // 4 because it's a 5-day work week (Monday to Friday)
+    
+      const options = { day: 'numeric', month: 'numeric', year: 'numeric' };
+      const formattedStartDate = startOfWeek.toLocaleDateString('en-US', options);
+      const formattedEndDate = endOfWeek.toLocaleDateString('en-US', options);
+    
+      return `${formattedStartDate} - ${formattedEndDate}`;
+    }
+    
+    console.log(getWeekDateRange(Date()));
+    
+
     const handleSave = () => {
 
         if (!selectedCompany || !selectedStatus) {

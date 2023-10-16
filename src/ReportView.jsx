@@ -94,7 +94,7 @@ export default function ReportView() {
                     <h5 className="font-bold">{STATUS_EQUIVALENTS[status]}</h5>
                     <ul className="ReportList">
                       {Object.keys(reportsData[date][companyKey][status]).map((reportKey) => (
-                        <li key={reportKey}>
+                        <li name={reportKey} key={reportKey}>
                           <div className="ml-5">{convertParagraphsToList(reportsData[date][companyKey][status][reportKey])}</div>
                         </li>
                       ))}
