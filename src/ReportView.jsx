@@ -18,7 +18,7 @@ function getWeekDateRange(date) {
   const endOfWeek = new Date(date);
 
   const currentDay = today.getDay();
-  const diffToMonday = today.getDate() - currentDay + (currentDay === 1 ? 0 : (currentDay === 1 ? -6 : 1));
+  const diffToMonday = today.getDate() - currentDay + (currentDay === 1 ? 1 : (currentDay === 1 ? -6 : 1));
 
   startOfWeek.setDate(diffToMonday);
   endOfWeek.setDate(diffToMonday + 4); // 4 because it's a 5-day work week (Monday to Friday)
@@ -30,11 +30,12 @@ function getWeekDateRange(date) {
   return `${formattedStartDate} - ${formattedEndDate}`;
 }
 
-
-
 export default function ReportView() {
   const [reportsData, setReportsData] = useState(null);
   const [companiesData, setCompaniesData] = useState({});
+  const [selectedDateRange, setSelectedDateRange] = useState(null); // Initialize with null
+  const [availableDateRanges, setAvailableDateRanges] = useState([]);
+  const [filterDateRange, setFilterDateRange] = useState(''); // Initialize with an empty string
 
   useEffect(() => {
     // Fetch companies data from Firebase
@@ -53,6 +54,11 @@ export default function ReportView() {
       if (snapshot.exists()) {
         const data = snapshot.val();
         setReportsData(data);
+
+        // Extract and set available date ranges
+        const ranges = Object.keys(data).map((date) => getWeekDateRange(date));
+        const uniqueRanges = [...new Set(ranges)]; // Remove duplicates
+        setAvailableDateRanges(uniqueRanges);
       } else {
         console.log('No reports data available');
         setReportsData(null);
@@ -64,7 +70,7 @@ export default function ReportView() {
       companiesUnsubscribe();
       reportsUnsubscribe();
     };
-  }, []); // Empty dependency array ensures the effect runs once after the initial render
+  }, []);
 
   const convertParagraphsToList = (htmlContent) => {
     const doc = new DOMParser().parseFromString(htmlContent, 'text/html');
@@ -77,35 +83,73 @@ export default function ReportView() {
     }
   };
 
-  const renderReports = () => {
+  const compileReportsByDateRange = () => {
     if (!reportsData) {
-      return <p>No reports data available</p>;
+      return {};
     }
 
-    return Object.keys(reportsData).map((date) => (
-      <div className="ReportView" key={date}>
-        {Object.keys(reportsData[date]).map((companyKey) => (
-          <div className="mb-20" key={companyKey}>
-            <h3 className="mb-10 text-xl">{companiesData[companyKey]?.Company_Name || companyKey} Weekly Reports | {getWeekDateRange(date)}</h3> {/* Display company name */}
-            {STATUS_ORDER.map((status) => {
-              if (reportsData[date][companyKey][status]) {
-                return (
-                  <div className="mb-10" key={status}>
-                    <h5 className="font-bold">{STATUS_EQUIVALENTS[status]}</h5>
-                    <ul className="ReportList">
-                      {Object.keys(reportsData[date][companyKey][status]).map((reportKey) => (
-                        <li name={reportKey} key={reportKey}>
-                          <div className="ml-5">{convertParagraphsToList(reportsData[date][companyKey][status][reportKey])}</div>
-                        </li>
-                      ))}
-                    </ul>
-                  </div>
-                );
-              }
-              return null;
-            })}
-          </div>
-        ))}
+    const groupedReports = {};
+
+    Object.keys(reportsData).forEach((date) => {
+      const dateRange = getWeekDateRange(date);
+
+      if (!groupedReports[dateRange]) {
+        groupedReports[dateRange] = {
+          Done: [],
+          'To Do': [],
+          'In Progress': [],
+          'Client Notes': [],
+        };
+      }
+
+      Object.keys(reportsData[date]).forEach((companyKey) => {
+        STATUS_ORDER.forEach((status) => {
+          if (reportsData[date][companyKey][status]) {
+            Object.keys(reportsData[date][companyKey][status]).forEach((reportKey) => {
+              const reportItem = {
+                companyKey,
+                status,
+                reportKey,
+                content: reportsData[date][companyKey][status][reportKey],
+              };
+              groupedReports[dateRange][status].push(reportItem);
+            });
+          }
+        });
+      });
+    });
+
+    return groupedReports;
+  };
+
+  const renderReports = () => {
+    const groupedReports = compileReportsByDateRange();
+
+    return Object.keys(groupedReports).map((dateRange) => (
+      <div className="ReportView" key={dateRange}>
+        {!filterDateRange && <h3 className="mb-10 text-xl">Weekly Reports | {dateRange}</h3>}
+        {STATUS_ORDER.map((status) => {
+          if (
+            (!filterDateRange || dateRange === filterDateRange) &&
+            groupedReports[dateRange][status].length > 0
+          ) {
+            return (
+              <div className="mb-10" key={status}>
+                <h5 className="font-bold">{STATUS_EQUIVALENTS[status]}</h5>
+                <ul className="ReportList">
+                  {groupedReports[dateRange][status].map((reportItem) => (
+                    <li name={reportItem.reportKey} key={reportItem.reportKey}>
+                      <div className="ml-5">
+                        {convertParagraphsToList(reportItem.content)}
+                      </div>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            );
+          }
+          return null;
+        })}
       </div>
     ));
   };
@@ -113,6 +157,17 @@ export default function ReportView() {
   return (
     <div className="">
       <h2 className="text-3xl mb-5">Weekly Reports</h2>
+      <select
+        value={filterDateRange}
+        onChange={(e) => setFilterDateRange(e.target.value)}
+      >
+        <option value="">All Date Ranges</option>
+        {availableDateRanges.map((dateRange) => (
+          <option key={dateRange} value={dateRange}>
+            {dateRange}
+          </option>
+        ))}
+      </select>
       {renderReports()}
     </div>
   );
