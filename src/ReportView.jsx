@@ -1,7 +1,9 @@
 import React, { useEffect, useState } from 'react';
-import { onValue } from 'firebase/database';
+import { onValue , set} from 'firebase/database';
+import { ref } from 'firebase/storage';
 import { reportsRef, companiesRef } from './firebase'; // Import your Firebase setup
 import './ReportView.css'; // Import CSS file for styling
+import { CheckCircleIcon, XMarkIcon } from '@heroicons/react/20/solid'
 
 const STATUS_ORDER = ['Done', 'In Progress', 'To Do', 'Client Notes'];
 
@@ -36,6 +38,9 @@ export default function ReportView() {
   const [selectedDateRange, setSelectedDateRange] = useState(null); // Initialize with null
   const [availableDateRanges, setAvailableDateRanges] = useState([]);
   const [filterDateRange, setFilterDateRange] = useState(''); // Initialize with an empty string
+  const [deleteConfirmation, setDeleteConfirmation] = useState(false);
+  const [selectedCompany, setSelectedCompany] = useState('');
+
 
   useEffect(() => {
     // Fetch companies data from Firebase
@@ -83,91 +88,224 @@ export default function ReportView() {
     }
   };
 
-  const compileReportsByDateRange = () => {
+
+  const compileReportsByDateAndCompany = () => {
     if (!reportsData) {
       return {};
     }
-
+  
     const groupedReports = {};
-
+  
     Object.keys(reportsData).forEach((date) => {
       const dateRange = getWeekDateRange(date);
-
+  
       if (!groupedReports[dateRange]) {
-        groupedReports[dateRange] = {
-          Done: [],
-          'To Do': [],
-          'In Progress': [],
-          'Client Notes': [],
-        };
+        groupedReports[dateRange] = {};
       }
-
+  
       Object.keys(reportsData[date]).forEach((companyKey) => {
+        if (!groupedReports[dateRange][companyKey]) {
+          groupedReports[dateRange][companyKey] = {
+            Done: [],
+            'In Progress': [],
+            'To Do': [],
+            'Client Notes': [],
+          };
+        }
+  
         STATUS_ORDER.forEach((status) => {
           if (reportsData[date][companyKey][status]) {
+            // Inside the compileReportsByDateAndCompany function
             Object.keys(reportsData[date][companyKey][status]).forEach((reportKey) => {
               const reportItem = {
-                companyKey,
                 status,
                 reportKey,
                 content: reportsData[date][companyKey][status][reportKey],
+                date: date,
+                companyKey: companyKey, // Include the company key here
               };
-              groupedReports[dateRange][status].push(reportItem);
+              groupedReports[dateRange][companyKey][status].push(reportItem);
             });
           }
         });
       });
     });
-
+  
     return groupedReports;
+  };  
+
+  const handleDeleteReport = (date, companyKey, status, reportKey) => {
+    const isConfirmed = window.confirm('Are you sure you want to delete this report?');
+  
+    if (isConfirmed) {
+      const updatedData = { ...reportsData };
+      // Show confirmation message
+      setDeleteConfirmation(true);
+
+      // Hide confirmation message after 3 seconds
+       setTimeout(() => {
+         setDeleteConfirmation(false);
+       }, 3000);      
+  
+      // Check if the necessary properties exist before attempting to delete the report
+      if (updatedData[date] && updatedData[date][companyKey] && updatedData[date][companyKey][status]) {
+        // Remove the specific report from the data structure
+        delete updatedData[date][companyKey][status][reportKey];
+  
+        // Update the Firebase database
+        const databaseRef = ref(reportsRef);
+        set(databaseRef, updatedData)
+          .then(() => {
+            console.log('Report deleted successfully!');
+          })
+          .catch((error) => {
+            console.error('Error deleting report: ', error);
+          });
+      } else {
+        console.error('Report not found. Unable to delete.');
+      }
+    }
   };
 
   const renderReports = () => {
-    const groupedReports = compileReportsByDateRange();
+    const groupedReports = compileReportsByDateAndCompany();
 
-    return Object.keys(groupedReports).map((dateRange) => (
-      <div className="ReportView" key={dateRange}>
-        {!filterDateRange && <h3 className="mb-10 text-xl">Weekly Reports | {dateRange}</h3>}
-        {STATUS_ORDER.map((status) => {
-          if (
-            (!filterDateRange || dateRange === filterDateRange) &&
-            groupedReports[dateRange][status].length > 0
-          ) {
+    if (!companiesData) {
+      return <div>Loading...</div>; // Or a loading indicator
+    }    
+    
+    return (
+      <div className="">
+          {deleteConfirmation && (
+
+          <div className="confirmation-message rounded-md bg-green-50 p-4 fixed left-0 top-0 z-50 m-5">
+          <div className="flex">
+            <div className="flex-shrink-0">
+              <CheckCircleIcon className="h-5 w-5 text-green-400" aria-hidden="true" />
+            </div>
+            <div className="ml-3">
+              <p className="text-sm font-medium text-green-800">Report Deleted</p>
+            </div>
+            <div className="ml-auto pl-3">
+              <div className="-mx-1.5 -my-1.5">
+                <button
+                  type="button close-button"
+                  className="inline-flex rounded-md bg-green-50 p-1.5 text-green-500 hover:bg-green-100 focus:outline-none focus:ring-2 focus:ring-green-600 focus:ring-offset-2 focus:ring-offset-green-50"
+                  onClick={() => setDeleteConfirmation(false)}
+                >
+                  <span className="sr-only">Dismiss</span>
+                  <XMarkIcon className="h-5 w-5" aria-hidden="true" />
+                </button>
+              </div>
+            </div>
+          </div>
+          </div>
+
+        )}
+
+        <h2 className="text-3xl mb-5">Weekly Reports</h2>
+        <select
+          value={filterDateRange}
+          onChange={(e) => setFilterDateRange(e.target.value)}
+          className="mb-10"
+        >
+          <option value="">All Date Ranges</option>
+          {availableDateRanges.map((dateRange) => (
+            <option key={dateRange} value={dateRange}>
+              {dateRange}
+            </option>
+          ))}
+        </select>
+
+        <select
+            id="companyDropdown"
+            name="company"
+            className="mt-1 pr-10 border"
+            value={selectedCompany}
+            onChange={(e) => setSelectedCompany(e.target.value)}
+          >
+            <option value="">All Companies</option>
+            {Object.keys(companiesData).map((companyKey) => {
+              const hasReports = Object.keys(groupedReports).some(dateRange =>
+                Object.keys(groupedReports[dateRange]).some(innerCompanyKey => innerCompanyKey === companyKey)
+              );
+
+              if (hasReports) {
+                return (
+                  <option key={companyKey} value={companyKey}>
+                    {companiesData[companyKey]['Company_Name']}
+                  </option>
+                );
+              }
+
+              return null; // Do not render if the company does not have associated reports
+            })}
+          </select>
+        
+
+        {Object.keys(groupedReports).map((dateRange) => {
+          if (!filterDateRange || dateRange === filterDateRange) {
             return (
-              <div className="mb-10" key={status}>
-                <h5 className="font-bold">{STATUS_EQUIVALENTS[status]}</h5>
-                <ul className="ReportList">
-                  {groupedReports[dateRange][status].map((reportItem) => (
-                    <li name={reportItem.reportKey} key={reportItem.reportKey}>
-                      <div className="ml-5">
-                        {convertParagraphsToList(reportItem.content)}
-                      </div>
-                    </li>
-                  ))}
-                </ul>
+              <div className="ReportView" key={dateRange}>
+                {Object.keys(groupedReports[dateRange]).map((companyKey) => {
+
+                  // Skip rendering if selected company is not empty and doesn't match the filtered company
+                  if (selectedCompany && selectedCompany !== companyKey) {
+                    return null;
+                  }                  
+
+                  const companyReports = groupedReports[dateRange][companyKey];
+                  return (
+                    <div className="mb-10" key={companyKey}>
+                      <h4 className="text-xl mb-5 font-semibold">{companiesData[companyKey]['Company_Name']} Weekly Reports | {dateRange}</h4>
+                      {STATUS_ORDER.map((status) => {
+                        const reports = companyReports[status];
+                        if (reports && reports.length > 0) {
+                          return (
+                            <div className="mb-5" key={status}>
+                              <h5 className="font-bold">{STATUS_EQUIVALENTS[status]}</h5>
+                              <ul className="ReportList">
+                                {reports.map((reportItem) => (
+                                  <li className="border-b border-solid" name={reportItem.reportKey} key={reportItem.reportKey}>
+                                      <button
+                                        className="text-red-500 float-right"
+                                        onClick={() =>
+                                          handleDeleteReport(
+                                            reportItem.date, // Pass the actual date key
+                                            companyKey,
+                                            status,
+                                            reportItem.reportKey
+                                          )
+                                        }
+                                      >
+                                        Delete
+                                      </button>                                    
+                                    <div className="ml-5">
+                                      {convertParagraphsToList(reportItem.content)}
+                                      
+                                    </div>
+                                  </li>
+                                ))}
+                              </ul>
+                            </div>
+                          );
+                        }
+                        return null;
+                      })}
+                    </div>
+                  );
+                })}
               </div>
             );
           }
           return null;
         })}
       </div>
-    ));
+    );
   };
 
   return (
     <div className="">
-      <h2 className="text-3xl mb-5">Weekly Reports</h2>
-      <select
-        value={filterDateRange}
-        onChange={(e) => setFilterDateRange(e.target.value)}
-      >
-        <option value="">All Date Ranges</option>
-        {availableDateRanges.map((dateRange) => (
-          <option key={dateRange} value={dateRange}>
-            {dateRange}
-          </option>
-        ))}
-      </select>
       {renderReports()}
     </div>
   );

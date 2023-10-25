@@ -5,7 +5,7 @@
 }
 
 .ReportList ul {
-    @apply list-disc mb-4;
+    @apply list-disc my-2;
     margin-left: 25px;
 }
 

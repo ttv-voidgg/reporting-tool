@@ -3,11 +3,13 @@ import { Editor } from '@tinymce/tinymce-react';
 import { onValue, set, push } from 'firebase/database';
 import { ref as sRef } from 'firebase/storage';
 import { companiesRef, reportsRef } from './firebase'; // Import your Firebase setup
+import { CheckCircleIcon, XMarkIcon } from '@heroicons/react/20/solid'
 
 export default function ReportSubmission() {
   const [selectedCompany, setSelectedCompany] = useState('');
   const [selectedStatus, setSelectedStatus] = useState('');
   const editorRef = useRef(null);
+  const [isReportSubmitted, setIsReportSubmitted] = useState(false);
 
 
   const [existingData, setExistingData] = useState(null);
@@ -46,8 +48,7 @@ export default function ReportSubmission() {
     
       return `${formattedStartDate} - ${formattedEndDate}`;
     }
-    
-    console.log(getWeekDateRange(Date()));
+  
     
 
     const handleSave = () => {
@@ -56,6 +57,15 @@ export default function ReportSubmission() {
           console.error('Please select a company and status');
           return;
         }
+
+            
+        // Set the state to show the "Report Submitted" prompt
+        setIsReportSubmitted(true);
+
+        // Automatically hide the prompt after 3 seconds
+        setTimeout(() => {
+          setIsReportSubmitted(false);
+        }, 3000);          
     
         const formattedDate = new Date().toLocaleDateString('en-CA', {
           year: 'numeric',
@@ -82,17 +92,6 @@ export default function ReportSubmission() {
         }        
 
         const content = editorRef.current.getContent();
-    
-        // const formattedData = {
-        //   [formattedDate]: {
-        //     [statusKey]: {
-        //       [companyKey]: {
-        //         [uniqueReportKey]: content
-        //       }
-        //     }
-        //   }
-        // };
-    
 
         // Check if taskKey is a non-empty string and does not contain invalid characters
         if (uniqueReportKey && typeof uniqueReportKey === 'string' && !/[.#$[\]\/]/.test(uniqueReportKey)) {
@@ -107,10 +106,13 @@ export default function ReportSubmission() {
           .then(() => {
             console.log('Data saved successfully!');
             // Optionally, you can reset the TinyMCE editor here
+            // Clear the TinyMCE editor content
+            editorRef.current.setContent('');        
+          
           })
           .catch((error) => {
             console.error('Error saving data: ', error);
-          });
+          });        
       };
 
 
@@ -133,9 +135,35 @@ export default function ReportSubmission() {
       unsubscribe();
     };
   }, []);
-
   return (
+    
     <div className="">
+      {
+        isReportSubmitted && 
+        <div className="confirmation-message rounded-md bg-green-50 p-4 fixed left-0 top-0 z-50 m-5">
+        <div className="flex">
+          <div className="flex-shrink-0">
+            <CheckCircleIcon className="h-5 w-5 text-green-400" aria-hidden="true" />
+          </div>
+          <div className="ml-3">
+            <p className="text-sm font-medium text-green-800">Report Submitted</p>
+          </div>
+          <div className="ml-auto pl-3">
+            <div className="-mx-1.5 -my-1.5">
+              <button
+                type="button close-button"
+                className="inline-flex rounded-md bg-green-50 p-1.5 text-green-500 hover:bg-green-100 focus:outline-none focus:ring-2 focus:ring-green-600 focus:ring-offset-2 focus:ring-offset-green-50"
+                onClick={() => setDeleteConfirmation(false)}
+              >
+                <span className="sr-only">Dismiss</span>
+                <XMarkIcon className="h-5 w-5" aria-hidden="true" />
+              </button>
+            </div>
+          </div>
+        </div>
+        </div>
+
+      }      
       <select
         className="border rounded px-2 py-1 mr-2 mb-5"
         value={selectedCompany}
