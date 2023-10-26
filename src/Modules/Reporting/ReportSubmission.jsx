@@ -2,7 +2,7 @@ import React, { useRef, useState, useEffect } from 'react';
 import { Editor } from '@tinymce/tinymce-react';
 import { onValue, set, push } from 'firebase/database';
 import { ref as sRef } from 'firebase/storage';
-import { companiesRef, reportsRef } from './firebase'; // Import your Firebase setup
+import { companiesRef, reportsRef } from '../../firebase'; // Import your Firebase setup
 import { CheckCircleIcon, XMarkIcon } from '@heroicons/react/20/solid'
 
 export default function ReportSubmission() {

@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import { onValue , set} from 'firebase/database';
 import { ref } from 'firebase/storage';
-import { reportsRef, companiesRef } from './firebase'; // Import your Firebase setup
-import './ReportView.css'; // Import CSS file for styling
+import { reportsRef, companiesRef } from '../../firebase'; // Import your Firebase setup
+import '../../css/ReportView.css'; // Import CSS file for styling
 import { CheckCircleIcon, XMarkIcon } from '@heroicons/react/20/solid'
 
 const STATUS_ORDER = ['Done', 'In Progress', 'To Do', 'Client Notes'];
@@ -226,20 +226,24 @@ export default function ReportView() {
           >
             <option value="">All Companies</option>
             {Object.keys(companiesData).map((companyKey) => {
-              const hasReports = Object.keys(groupedReports).some(dateRange =>
-                Object.keys(groupedReports[dateRange]).some(innerCompanyKey => innerCompanyKey === companyKey)
-              );
+  const hasReportsForDateRange = Object.keys(groupedReports).some(dateRange =>
+    Object.keys(groupedReports[dateRange]).some(innerCompanyKey =>
+      innerCompanyKey === companyKey && (!filterDateRange || dateRange === filterDateRange)
+    )
+  );
 
-              if (hasReports) {
-                return (
-                  <option key={companyKey} value={companyKey}>
-                    {companiesData[companyKey]['Company_Name']}
-                  </option>
-                );
-              }
+  if (hasReportsForDateRange) {
+    const company = companiesData[companyKey];
+    return (
+      <option key={companyKey} value={companyKey}>
+        {company['Company_Name']} {/* Safely access 'Company_Name' using optional chaining */}
+      </option>
+    );
+  }
 
-              return null; // Do not render if the company does not have associated reports
-            })}
+  return null; // Do not render if the company does not have associated reports for the selected date range
+})}
+
           </select>
         
 
@@ -257,7 +261,9 @@ export default function ReportView() {
                   const companyReports = groupedReports[dateRange][companyKey];
                   return (
                     <div className="mb-10" key={companyKey}>
-                      <h4 className="text-xl mb-5 font-semibold">{companiesData[companyKey]['Company_Name']} Weekly Reports | {dateRange}</h4>
+                      <h4 className="text-xl mb-5 font-semibold">
+                        {companiesData[companyKey]?.['Company_Name'] || 'Unknown Company'} Weekly Reports | {dateRange}
+                      </h4>
                       {STATUS_ORDER.map((status) => {
                         const reports = companyReports[status];
                         if (reports && reports.length > 0) {
@@ -266,20 +272,7 @@ export default function ReportView() {
                               <h5 className="font-bold">{STATUS_EQUIVALENTS[status]}</h5>
                               <ul className="ReportList">
                                 {reports.map((reportItem) => (
-                                  <li className="border-b border-solid" name={reportItem.reportKey} key={reportItem.reportKey}>
-                                      <button
-                                        className="text-red-500 float-right"
-                                        onClick={() =>
-                                          handleDeleteReport(
-                                            reportItem.date, // Pass the actual date key
-                                            companyKey,
-                                            status,
-                                            reportItem.reportKey
-                                          )
-                                        }
-                                      >
-                                        Delete
-                                      </button>                                    
+                                  <li className="border-b border-solid" name={reportItem.reportKey} key={reportItem.reportKey}>                                
                                     <div className="ml-5">
                                       {convertParagraphsToList(reportItem.content)}
                                       

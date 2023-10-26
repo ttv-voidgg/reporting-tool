@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { onValue } from "firebase/database";
-import { companiesRef } from "./firebase"; // Import companiesRef from firebase.jsx
-import './clientTable.css';
+import { companiesRef } from "../../firebase"; // Import companiesRef from firebase.jsx
+import '../../css/clientTable.css';
 
 const CompanyTable = () => {
   const [companies, setCompanies] = useState([]);

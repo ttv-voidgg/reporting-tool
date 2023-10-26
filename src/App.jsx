@@ -1,14 +1,12 @@
 import React, { Fragment } from "react";
+import { BrowserRouter as Router, Route, Routes, useParams } from "react-router-dom";
 import { Disclosure, Menu, Transition } from '@headlessui/react'
 import { Bars3Icon, BellIcon, XMarkIcon, PhotoIcon, UserCircleIcon } from '@heroicons/react/24/outline'
 
 //IMPOR COMPANY TABLE
-import CompanyTable from "./CompanyTable";
-import AddCompany from "./AddCompany";
-import TextBoxSample from "./TextBoxSample";
-import ReportsList from "./ReportsList";
-import ReportSubmission from "./ReportSubmission";
-import ReportView from "./ReportView";
+import CompanyPage from "./Pages/CompaniesPage";
+import ReportsPage from "./Pages/ReportsPage";
+import ReportsView from "./Modules/Reporting/ReportFinal";
 
 const user = {
   name: 'Tom Cook',
@@ -17,11 +15,10 @@ const user = {
     'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80',
 }
 const navigation = [
-  { name: 'Dashboard', href: '#', current: true },
-  { name: 'Team', href: '#', current: false },
-  { name: 'Projects', href: '#', current: false },
-  { name: 'Calendar', href: '#', current: false },
-  { name: 'Reports', href: '#', current: false },
+  { name: 'Dashboard', href: '/', current: true },
+  { name: 'Reports', href: 'reports', current: false },
+  { name: 'Companies', href: 'companies', current: false },
+  // { name: 'Calendar', href: '#', current: false },
 ]
 const userNavigation = [
   { name: 'Your Profile', href: '#' },
@@ -36,7 +33,7 @@ function classNames(...classes) {
 export default function Example() {
 
   return (
-    <>
+    <Router>
       {/*
         This example requires updating your template:
 
@@ -212,31 +209,18 @@ export default function Example() {
           <div className="mx-auto max-w-7xl px-4 pb-12 sm:px-6 lg:px-8">
             <div className="rounded-lg bg-white px-5 py-6 shadow sm:px-6">
 
-           {/*START ADDING DATA HERE*/}
-            <div className="App">
-              <div className="mb-5">
-                <AddCompany/>
-              </div>              
-              <div className="mb-5">
-                <CompanyTable />
-              </div>
-              <div className="mb-5">
-                {/* <TextBoxSample /> */}
-              </div>
-              <div className="mb-5">
-                <ReportSubmission />
-              </div>
-              <div className="mb-5">
-                <ReportView />
-              </div>              
-            </div>                        
-           {/*END ADDING DATA HERE*/}
-
+              {/* React Router Routes */}
+              <Routes>
+                <Route path="/Reports" element={<ReportsPage />} />
+                <Route path="/Reports/view" element={<ReportsView />} />
+                <Route path="/Companies" element={<CompanyPage />} />
+                {/* Add more routes for other components as needed */}
+              </Routes>
 
             </div>
           </div>
         </main>
       </div>
-    </>
+    </Router>
   )
 }

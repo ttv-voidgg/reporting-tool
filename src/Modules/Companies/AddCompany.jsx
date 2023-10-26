@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { push } from 'firebase/database';
 import { ref as sRef } from 'firebase/storage';
-import { companiesRef } from './firebase'; // Import companiesRef from firebase.jsx
+import { companiesRef } from '../../firebase'; // Import companiesRef from firebase.jsx
 
 export default function AddCompany() {
   const [Company_Name, setCompanyName] = useState('');
