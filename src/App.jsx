@@ -54,6 +54,7 @@ export default function App() {
   const [userAuthenticated, setUserAuthenticated] = useState(true);
 
   useEffect(() => {
+    console.log('Base Path:', window.location.pathname);
     const unsubscribe = auth.onAuthStateChanged((users) => {
       // Check user authentication status
       if (users) {
@@ -266,11 +267,25 @@ export default function App() {
 
             <Routes>
               {/* Public Routes */}
-              <Route path="/Login" element={<LoginPage />} />
+              <Route path="/login" element={<LoginPage />} />
               <Route path="/" element={<Dashboard />} />
-              <Route path="/Reports" element={<ReportsPage />} />
-              <Route path="/Reports/view" element={<ReportsView />} />
-              <Route path="/Companies" element={<CompanyPage />} />
+              <Route path="/reports" element={<ReportsPage />} />
+              <Route path="/reports/view" element={<ReportsView />} />
+              <Route path="/companies" element={<CompanyPage />} />
+              {/* Protected Routes */}
+              {userAuthenticated ? (
+                <>
+                {console.log(userAuthenticated)}
+                  <Route path="/" element={<Dashboard />} />
+                  <Route path="/reports" element={<ReportsPage />} />
+                  <Route path="/reports/view" element={<ReportsView />} />
+                  <Route path="/companies" element={<CompanyPage />} />
+                  {/* Add more protected routes for other components as needed */}
+                </>
+              ) : (
+                // Redirect to login page if user is not authenticated
+                <Route path="*" element={<Navigate to="/login" />} />
+              )}
             </Routes>
             {console.log(userAuthenticated)}
 
