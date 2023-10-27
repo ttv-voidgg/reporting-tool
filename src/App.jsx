@@ -267,21 +267,10 @@ export default function App() {
             <Routes>
               {/* Public Routes */}
               <Route path="/login" element={<LoginPage />} />
-
-              {/* Protected Routes */}
-              {userAuthenticated ? (
-                <>
-                {console.log(userAuthenticated)}
-                  <Route path="/" element={<Dashboard />} />
-                  <Route path="/reports" element={<ReportsPage />} />
-                  <Route path="/reports/view" element={<ReportsView />} />
-                  <Route path="/companies" element={<CompanyPage />} />
-                  {/* Add more protected routes for other components as needed */}
-                </>
-              ) : (
-                // Redirect to login page if user is not authenticated
-                <Route path="*" element={<Navigate to="/login" />} />
-              )}
+              <Route path="/" element={<Dashboard />} />
+              <Route path="/reports" element={<ReportsPage />} />
+              <Route path="/reports/view" element={<ReportsView />} />
+              <Route path="/companies" element={<CompanyPage />} />
             </Routes>
             {console.log(userAuthenticated)}
 
