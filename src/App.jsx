@@ -259,7 +259,7 @@ export default function App() {
                 <Route path="/*" element={<Navigate to="/login" />} />
               )}
             </Routes>
-            {console.log(userAuthenticated)}
+            {/*console.log(userAuthenticated)*/}
 
 
 

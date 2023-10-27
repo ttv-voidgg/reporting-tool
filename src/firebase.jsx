@@ -32,10 +32,10 @@ const reportsRef = ref(database, 'Reports');
 // Enable session persistence
 setPersistence(auth, browserSessionPersistence)
   .then(() => {
-    console.log("Session persistence enabled");
+    //console.log("Session persistence enabled");
   })
   .catch((error) => {
-    console.error("Error enabling session persistence:", error);
+    //console.error("Error enabling session persistence:", error);
   });
 
   // signOut(auth)
@@ -46,6 +46,6 @@ setPersistence(auth, browserSessionPersistence)
   //   console.error('Error signing out:', error);
   // });
 
-console.log(auth);
+  //console.log(auth);
 
 export { companiesRef, reportsRef, auth };
