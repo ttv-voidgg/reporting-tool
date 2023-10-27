@@ -256,7 +256,7 @@ export default function App() {
                 </>
               ) : (
                 // Redirect to login page if user is not authenticated
-                <Route path="/*" element={<Navigate to="/login" />} />
+                <Route path="*" element={<Navigate to="/login" />} />
               )}
             </Routes>
             {/*console.log(userAuthenticated)*/}
