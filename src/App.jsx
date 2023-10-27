@@ -11,6 +11,20 @@ import Dashboard from "./Pages/Dashboard";
 import ReportsView from "./Modules/Reporting/ReportFinal";
 import LoginPage from "./Modules/Security/Login";
 
+
+  const handleSignOut = () => {
+    auth.signOut()
+      .then(() => {
+        // Sign-out successful.
+        console.log('User signed out successfully.');
+      })
+      .catch((error) => {
+        // An error happened.
+        console.error('Error occurred during sign-out:', error);
+      });
+  };  
+
+
 const user = {
   name: 'Tom Cook',
   email: 'tom@example.com',
@@ -23,15 +37,17 @@ const navigation = [
   { name: 'Companies', href: 'companies', current: false },
   // { name: 'Calendar', href: '#', current: false },
 ]
+
 const userNavigation = [
   { name: 'Your Profile', href: '#' },
   { name: 'Settings', href: '#' },
-  { name: 'Sign out', href: '#' },
+  { name: 'Sign out', href: '#', onClick: handleSignOut },
 ]
 
 function classNames(...classes) {
   return classes.filter(Boolean).join(' ')
 }
+
 
 export default function App() {
 
@@ -142,21 +158,28 @@ export default function App() {
                               leaveTo="transform opacity-0 scale-95"
                             >
                               <Menu.Items className="absolute right-0 z-10 mt-2 w-48 origin-top-right rounded-md bg-white py-1 shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
-                                {userNavigation.map((item) => (
-                                  <Menu.Item key={item.name}>
-                                    {({ active }) => (
-                                      <a
-                                        href={item.href}
-                                        className={classNames(
-                                          active ? 'bg-gray-100' : '',
-                                          'block px-4 py-2 text-sm text-gray-700'
-                                        )}
-                                      >
-                                        {item.name}
-                                      </a>
-                                    )}
-                                  </Menu.Item>
-                                ))}
+                              {userNavigation.map((item) => (
+                                <Menu.Item key={item.name}>
+                                  {({ active }) => (
+                                    <a
+                                      href={item.href}
+                                      onClick={(e) => {
+                                        e.preventDefault(); // Prevent the default anchor tag behavior
+                                        if (item.onClick) {
+                                          item.onClick(); // Call the sign-out function
+                                        }
+                                      }}
+                                      className={classNames(
+                                        active ? 'bg-gray-100' : '',
+                                        'block px-4 py-2 text-sm text-gray-700'
+                                      )}
+                                    >
+                                      {item.name}
+                                    </a>
+                                  )}
+                                </Menu.Item>
+                              ))}
+
                               </Menu.Items>
                             </Transition>
                           </Menu>
