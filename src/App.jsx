@@ -268,10 +268,6 @@ export default function App() {
             <Routes>
               {/* Public Routes */}
               <Route path="/login" element={<LoginPage />} />
-              <Route path="/" element={<Dashboard />} />
-              <Route path="/reports" element={<ReportsPage />} />
-              <Route path="/reports/view" element={<ReportsView />} />
-              <Route path="/companies" element={<CompanyPage />} />
               {/* Protected Routes */}
               {userAuthenticated ? (
                 <>
