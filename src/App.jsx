@@ -82,7 +82,7 @@ export default function App() {
   }, []);  
 
   return (
-    <Router>
+    <Router basename="/">
       {/*
         This example requires updating your template:
 
