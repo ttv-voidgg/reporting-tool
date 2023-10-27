@@ -266,11 +266,11 @@ export default function App() {
 
             <Routes>
               {/* Public Routes */}
-              <Route path="/login" element={<LoginPage />} />
+              <Route path="/Login" element={<LoginPage />} />
               <Route path="/" element={<Dashboard />} />
-              <Route path="/reports" element={<ReportsPage />} />
-              <Route path="/reports/view" element={<ReportsView />} />
-              <Route path="/companies" element={<CompanyPage />} />
+              <Route path="/Reports" element={<ReportsPage />} />
+              <Route path="/Reports/view" element={<ReportsView />} />
+              <Route path="/Companies" element={<CompanyPage />} />
             </Routes>
             {console.log(userAuthenticated)}
 
