@@ -1,12 +1,15 @@
-import React, { Fragment } from "react";
-import { BrowserRouter as Router, Route, Routes, useParams } from "react-router-dom";
+import React, { Fragment, useState, useEffect } from 'react';
+import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { Disclosure, Menu, Transition } from '@headlessui/react'
 import { Bars3Icon, BellIcon, XMarkIcon, PhotoIcon, UserCircleIcon } from '@heroicons/react/24/outline'
+import { auth } from './firebase';
 
 //IMPOR COMPANY TABLE
 import CompanyPage from "./Pages/CompaniesPage";
 import ReportsPage from "./Pages/ReportsPage";
+import Dashboard from "./Pages/Dashboard";
 import ReportsView from "./Modules/Reporting/ReportFinal";
+import LoginPage from "./Modules/Security/Login";
 
 const user = {
   name: 'Tom Cook',
@@ -30,7 +33,36 @@ function classNames(...classes) {
   return classes.filter(Boolean).join(' ')
 }
 
-export default function Example() {
+export default function App() {
+
+  const [userAuthenticated, setUserAuthenticated] = useState(true);
+
+  useEffect(() => {
+    const unsubscribe = auth.onAuthStateChanged((users) => {
+      // Check user authentication status
+      if (users) {
+      // Check if the user's email belongs to the allowed domain
+      if (users.email && users.email.includes('@chykalophia.com')) {
+        // User is signed in and has an allowed email address
+        setUserAuthenticated(true);
+      } else {
+        // User is signed in but has a disallowed email address
+        // Sign the user out or handle the unauthorized access accordingly
+        setUserAuthenticated(false);
+        auth.signOut(); // Sign out the unauthorized user
+      }
+      } else {
+        // User is signed out
+        
+        setUserAuthenticated(false);
+      }
+    });
+  
+    // Cleanup the observer on component unmount
+    return () => {
+      unsubscribe();
+    };
+  }, []);  
 
   return (
     <Router>
@@ -209,13 +241,27 @@ export default function Example() {
           <div className="mx-auto max-w-7xl px-4 pb-12 sm:px-6 lg:px-8">
             <div className="rounded-lg bg-white px-5 py-6 shadow sm:px-6">
 
-              {/* React Router Routes */}
-              <Routes>
-                <Route path="/Reports" element={<ReportsPage />} />
-                <Route path="/Reports/view" element={<ReportsView />} />
-                <Route path="/Companies" element={<CompanyPage />} />
-                {/* Add more routes for other components as needed */}
-              </Routes>
+            <Routes>
+              {/* Public Routes */}
+              <Route path="/login" element={<LoginPage />} />
+
+              {/* Protected Routes */}
+              {userAuthenticated ? (
+                <>
+                  <Route path="/" element={<Dashboard />} />
+                  <Route path="/reports" element={<ReportsPage />} />
+                  <Route path="/reports/view" element={<ReportsView />} />
+                  <Route path="/companies" element={<CompanyPage />} />
+                  {/* Add more protected routes for other components as needed */}
+                </>
+              ) : (
+                // Redirect to login page if user is not authenticated
+                <Route path="/*" element={<Navigate to="/login" />} />
+              )}
+            </Routes>
+            {console.log(userAuthenticated)}
+
+
 
             </div>
           </div>
