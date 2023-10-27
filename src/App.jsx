@@ -271,6 +271,7 @@ export default function App() {
               {/* Protected Routes */}
               {userAuthenticated ? (
                 <>
+                {console.log(userAuthenticated)}
                   <Route path="/" element={<Dashboard />} />
                   <Route path="/reports" element={<ReportsPage />} />
                   <Route path="/reports/view" element={<ReportsView />} />
@@ -282,7 +283,7 @@ export default function App() {
                 <Route path="*" element={<Navigate to="/login" />} />
               )}
             </Routes>
-            {/*console.log(userAuthenticated)*/}
+            {console.log(userAuthenticated)}
 
 
 
