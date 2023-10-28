@@ -59,7 +59,7 @@ export default function App() {
       // Check user authentication status
       if (users) {
       // Check if the user's email belongs to the allowed domain
-      if (users.email && users.email.includes('@chykalophia.com')) {
+      if (users.email && users.email.includes('@chykalophia.com') || users.email.includes('juancarlos.deborja@gmail.com')) {
         // User is signed in and has an allowed email address
         setUserAuthenticated(true);
       } else {
