@@ -33,7 +33,7 @@ const Login = () => {
   };
 
   return (
-    // just a comment//
+    // just a comment
     <div className="text-center">
       <h2 className="text-4xl font-black mb-2">Chykalophia Reporting Tool</h2>
       <p className="text-regular mb-5">This login is so basic. Well, we still need to add stuff for sure. But MVP for now!</p>
