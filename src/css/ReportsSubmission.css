@@ -1,0 +1,11 @@
+.status-radio {
+    @apply mb-5
+}
+
+.status-radio label {
+    @apply mr-5 ml-1;
+}
+
+.status-radio input{
+    @apply -mt-1;
+}

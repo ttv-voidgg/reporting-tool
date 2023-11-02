@@ -1,5 +1,5 @@
 import React, { Fragment, useState, useEffect } from 'react';
-import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, Navigate, useLocation  } from 'react-router-dom';
 import { Disclosure, Menu, Transition } from '@headlessui/react'
 import { Bars3Icon, BellIcon, XMarkIcon, PhotoIcon, UserCircleIcon } from '@heroicons/react/24/outline'
 import { auth } from './firebase';
@@ -24,23 +24,17 @@ import LoginPage from "./Modules/Security/Login";
       });
   };  
 
-
-const user = {
-  name: 'Tom Cook',
-  email: 'tom@example.com',
-  imageUrl:
-    'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80',
-}
 const navigation = [
-  { name: 'Dashboard', href: '/', current: true },
-  { name: 'Reports', href: 'reports', current: false },
-  { name: 'Companies', href: 'companies', current: false },
+  { name: 'Dashboard', href: '/', current: false },
+  { name: 'Reports', href: '/reports', current: false },
+  { name: 'Companies', href: '/companies', current: false },
+  { name: '', href: '/login', current: false },
   // { name: 'Calendar', href: '#', current: false },
 ]
 
 const userNavigation = [
-  { name: 'Your Profile', href: '#' },
-  { name: 'Settings', href: '#' },
+  // { name: 'Your Profile', href: '#' },
+  // { name: 'Settings', href: '#' },
   { name: 'Sign out', href: '#', onClick: handleSignOut },
 ]
 
@@ -48,10 +42,31 @@ function classNames(...classes) {
   return classes.filter(Boolean).join(' ')
 }
 
+function DynamicPageTitle() {
+  const location = useLocation();
+  const [currentRouteName, setCurrentRouteName] = useState('');
+
+  useEffect(() => {
+    const currentRoute = navigation.find((item) => item.href === location.pathname);
+    if (currentRoute) {
+      setCurrentRouteName(currentRoute.name);
+      document.title = `Reporting Tool - ${currentRoute.name}`;
+    }
+  }, [location.pathname]);
+
+  return <h1 className="text-3xl font-bold tracking-tight text-white">{currentRouteName}</h1>;
+}
+
 
 export default function App() {
-
+ 
   const [userAuthenticated, setUserAuthenticated] = useState(true);
+  const [loading, setLoading] = useState(true);
+  const [user, setUser] = useState({
+    name: 'Chykalophia',
+    email: 'support@chykalophia.com',
+    imageUrl: 'http://chykalophia.com/wp-content/uploads/2019/08/cropped-CKLPH_Favicon-192x192.png',
+  });
 
   useEffect(() => {
     console.log('Base Path:', window.location.pathname);
@@ -68,12 +83,34 @@ export default function App() {
         setUserAuthenticated(false);
         auth.signOut(); // Sign out the unauthorized user
       }
+
+      // Fetch additional user data here
+      // For example, if you have a users collection in Firestore, you can fetch user data based on the user's UID.
+      // Once you have the user data, update the state and set loading to false.
+      // For demonstration purposes, I'll assume you have the user data available directly from Firebase.
+      const { displayName, email, photoURL } = users;
+      setUser({
+        name: displayName || 'Chykalophia',
+        email: email || 'support@chykalophia.com',
+        imageUrl: photoURL || null,
+      });
+      setLoading(false); // Data loaded, set loading to false      
+
+
       } else {
         // User is signed out
-        
         setUserAuthenticated(false);
+
+        setUser({
+          name: 'Chykalophia',
+          email: 'support@chykalophia.com',
+          imageUrl: 'http://chykalophia.com/wp-content/uploads/2019/08/cropped-CKLPH_Favicon-192x192.png',
+        });
+        setLoading(false); // No user data, set loading to false
+
       }
     });
+    
   
     // Cleanup the observer on component unmount
     return () => {
@@ -105,8 +142,8 @@ export default function App() {
                         <div className="flex-shrink-0">
                           <img
                             className="h-8 w-8"
-                            src="https://tailwindui.com/img/logos/mark.svg?color=indigo&shade=500"
-                            alt="Your Company"
+                            src="http://chykalophia.com/wp-content/uploads/2019/08/cropped-CKLPH_Favicon-192x192.png"
+                            alt="Chykalophia"
                           />
                         </div>
                         <div className="hidden md:block">
@@ -256,7 +293,7 @@ export default function App() {
           </Disclosure>
           <header className="py-10">
             <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-              <h1 className="text-3xl font-bold tracking-tight text-white">Dashboard</h1>
+              <DynamicPageTitle />
             </div>
           </header>
         </div>
@@ -271,7 +308,7 @@ export default function App() {
               {/* Protected Routes */}
               {userAuthenticated ? (
                 <>
-                {console.log(userAuthenticated)}
+                
                   <Route path="/" element={<Dashboard />} />
                   <Route path="/reports" element={<ReportsPage />} />
                   <Route path="/reports/view" element={<ReportsView />} />
@@ -283,7 +320,7 @@ export default function App() {
                 <Route path="*" element={<Navigate to="/login" />} />
               )}
             </Routes>
-            {console.log(userAuthenticated)}
+            
 
 
 

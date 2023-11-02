@@ -203,7 +203,7 @@ export default function ReportView() {
 
         )}
 
-        <h2 className="text-3xl mb-5">Weekly Reports</h2>
+        <h2 className="text-3xl mb-5">Weekly Reports View</h2>
         <select
           value={filterDateRange}
           onChange={(e) => setFilterDateRange(e.target.value)}

@@ -9,7 +9,11 @@ export default function Dashboard() {
   return (
     <div className="flex flex-col space-y-6">
       {/* Render both components */}
-      Just a Dashboard
+      Just a Dashboard...
+      <br/>
+      Needs more work... My brain's not braining right now...
+      <br/>
+      - Eejay
     </div>
   );
 }
