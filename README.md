@@ -1,8 +1,7 @@
-# React + Vite
+# Reporting Tool
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+I developed a reporting tool for a company I used to work for as a project manager to alleviate and optimize our Friday email updates. The tool utilizes a comprehensive tech stack that includes **React** for building user interfaces, **Express** and **Firebase** for backend development and database management, and **Tailwind CSS** for styling. Other significant dependencies such as **React Router Dom** facilitate efficient navigation within the web application, while **TinyMCE** provides an easy-to-use, rich text editor for composing detailed reports. This combination of technologies ensures that the tool is both robust and user-friendly, streamlining the process of compiling and sending weekly updates.
 
-Currently, two official plugins are available:
+In addition to the primary dependencies, the tool also leverages several dev dependencies to improve the development workflow and maintain code quality. These include **Vite** for rapid development and building, **ESLint** for identifying and fixing code issues, and various plugins such as **@vitejs/plugin-react** and **@vitejs/plugin-vue** for seamless integration of frameworks. **Autoprefixer** and **PostCSS** are used to ensure cross-browser compatibility and efficient CSS management. **TailwindCSS**, in particular, plays a crucial role in enabling developers to write clean, maintainable styles with utility-first CSS. By using these tools, the development process is optimized, making it easier to add new features and maintain the tool over time.
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react/README.md) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+While the reporting tool has significantly improved our weekly update process, there are still some features to be developed in the future if I get the time and budget. Potential enhancements include adding more customization options for the report templates, integrating advanced analytics to provide deeper insights, and implementing automation features to reduce manual effort further. These future developments aim to make the tool even more efficient and valuable for the company, ensuring that the reporting process remains streamlined and effective.
