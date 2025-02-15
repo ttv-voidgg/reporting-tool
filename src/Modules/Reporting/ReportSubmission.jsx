@@ -218,7 +218,7 @@ export default function ReportSubmission() {
       </div>
 
       <Editor
-        apiKey="9kmml34hfnmo4nntltoekgxa8n24hd5ilv6wunbb5d0vr1cm"
+        apiKey="" //TinyMCE API Key
         onInit={(evt, editor) => (editorRef.current = editor)}
         initialValue='
         <ul>
